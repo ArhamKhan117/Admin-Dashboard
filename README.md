@@ -3,14 +3,12 @@
 A production-minded admin dashboard that lets authenticated admins create organizations, invite members, and manage an organization directory.
 
 **Live URLs**
-- Production: _add your Vercel production URL here_
-- Preview (development branch): _add your Vercel preview URL here_
+- Production: https://admin-dashboard-wun4.vercel.app
+- Preview (development branch): https://admin-dashboard-wun4-git-development-arhamkhan117s-projects.vercel.app
 
 **Test credentials**
-- Email: `admin@example.com`
-- Password: `adminpass123`
-
-_(Seed these in your Supabase project after running the migration)_
+- Email: `admin@test.com`
+- Password: `Admin1234!`
 
 ---
 
