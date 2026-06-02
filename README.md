@@ -8,7 +8,7 @@ A production-minded admin dashboard that lets authenticated admins create organi
 
 **Test credentials**
 - Email: `admin@test.com`
-- Password: `Admin1234!`
+- Password: `Admin1234`
 
 ---
 
