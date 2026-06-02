@@ -48,7 +48,7 @@ export const createOrgSchema = z
 
 type CreateOrgFormValues = z.infer<typeof createOrgSchema>;
 
-export function CreateOrganizationForm() {
+export function CreateOrganizationForm({ onSuccess }: { onSuccess?: () => void }) {
   const { user } = useAuth();
   const createOrg = useCreateOrganization();
   const [formError, setFormError] = useState<string | null>(null);
@@ -83,6 +83,7 @@ export function CreateOrganizationForm() {
       });
 
       form.reset();
+      onSuccess?.();
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Something went wrong";
