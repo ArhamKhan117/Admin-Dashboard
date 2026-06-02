@@ -39,6 +39,11 @@ CREATE POLICY "organizations_update_own"
   USING (auth.uid() = created_by)
   WITH CHECK (auth.uid() = created_by);
 
+-- DELETE: admins can only delete their own organizations
+CREATE POLICY "organizations_delete_own"
+  ON public.organizations FOR DELETE
+  USING (auth.uid() = created_by);
+
 -- ============================================================
 -- organization_members
 -- ============================================================
