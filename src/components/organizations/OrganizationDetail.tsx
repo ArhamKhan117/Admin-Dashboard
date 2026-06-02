@@ -83,27 +83,30 @@ export function OrganizationDetail({ orgId }: OrganizationDetailProps) {
         </div>
       </div>
 
-      {/* Members section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">
-            Members ({members.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <MemberList members={members} isLoading={membersLoading} />
-        </CardContent>
-      </Card>
+      {/* Members + Invite — 2-col on desktop */}
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        {/* Members section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Members ({members.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <MemberList members={members} isLoading={membersLoading} />
+          </CardContent>
+        </Card>
 
-      {/* Invite form */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Invite a Member</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <InviteMemberForm organizationId={orgId} />
-        </CardContent>
-      </Card>
+        {/* Invite form */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Invite a Member</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <InviteMemberForm organizationId={orgId} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

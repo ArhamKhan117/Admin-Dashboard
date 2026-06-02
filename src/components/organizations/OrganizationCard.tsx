@@ -37,10 +37,10 @@ export function OrganizationCard({ organization, onClick }: OrganizationCardProp
         <div
           className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 text-sm font-bold ${
             organization.type === OrganizationType.School
-              ? "bg-blue-100 text-blue-700"
+              ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
               : organization.type === OrganizationType.Nonprofit
-              ? "bg-green-100 text-green-700"
-              : "bg-purple-100 text-purple-700"
+              ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+              : "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
           }`}
         >
           {organization.name.charAt(0).toUpperCase()}

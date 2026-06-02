@@ -21,17 +21,17 @@ export function OrganizationList({ organizations, isLoading, onCardClick }: Orga
 
   if (organizations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
-        <div className="rounded-full bg-muted p-4 mb-4">
-          <Building2 className="h-8 w-8 text-muted-foreground" />
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20 text-center">
+        <div className="rounded-2xl bg-primary/10 p-5 mb-5">
+          <Building2 className="h-10 w-10 text-primary" />
         </div>
-        <h3 className="text-base font-semibold">No organizations yet</h3>
-        <p className="mt-1 text-sm text-muted-foreground max-w-xs">
-          Create your first organization using the{" "}
-          <span className="inline-flex items-center gap-0.5 font-medium">
+        <h3 className="text-lg font-semibold">No organizations yet</h3>
+        <p className="mt-2 text-sm text-muted-foreground max-w-xs leading-relaxed">
+          You haven't created any organizations. Hit{" "}
+          <span className="inline-flex items-center gap-0.5 font-medium text-foreground">
             <Plus className="h-3 w-3" /> New Organization
           </span>{" "}
-          button above.
+          to get started.
         </p>
       </div>
     );
