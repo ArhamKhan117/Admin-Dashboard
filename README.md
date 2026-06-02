@@ -184,4 +184,12 @@ The requirement is one conditional field for one type. A separate table would be
 
 - **No email confirmation on sign-up** — Disabled so test credentials work immediately. In production this would be enabled.
 - **No rate limiting on the Edge Function** — A production system would add rate limiting to prevent invite spam. Supabase Auth handles sign-in rate limiting natively.
-- **Client-side search/filter** — Filtering happens in-memory on the fetched list. For datasets with thousands of orgs, this would move server-side using Supabase's `ilike` operator.
+## Contributing
+
+This project was built as a technical assessment. The codebase is structured for clarity and extensibility — feel free to explore and build on it.
+
+---
+
+## License
+
+MIT
