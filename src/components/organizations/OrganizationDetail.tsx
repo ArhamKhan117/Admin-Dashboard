@@ -1,13 +1,25 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { useOrganization } from "@/hooks/useOrganization";
 import { useMembers } from "@/hooks/useMembers";
+import { useDeleteOrganization } from "@/hooks/useDeleteOrganization";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MemberList } from "@/components/members/MemberList";
 import { InviteMemberForm } from "@/components/members/InviteMemberForm";
 import { OrganizationType } from "@/types/database";
 import { formatDate } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 interface OrganizationDetailProps {
   orgId: string;
@@ -23,8 +35,30 @@ const typeBadgeVariant: Record<
 };
 
 export function OrganizationDetail({ orgId }: OrganizationDetailProps) {
+  const navigate = useNavigate();
   const { data: org, isLoading: orgLoading, error: orgError } = useOrganization(orgId);
   const { data: members = [], isLoading: membersLoading } = useMembers(orgId);
+  const deleteOrg = useDeleteOrganization();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteOrg.mutateAsync(orgId);
+      toast({
+        title: "Organization deleted",
+        description: `"${org?.name}" has been deleted.`,
+      });
+      navigate("/dashboard/organizations");
+    } catch {
+      toast({
+        title: "Delete failed",
+        description: "Could not delete the organization. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setConfirmOpen(false);
+    }
+  };
 
   if (orgLoading) {
     return (
@@ -81,7 +115,62 @@ export function OrganizationDetail({ orgId }: OrganizationDetailProps) {
             </span>
           </div>
         </div>
+
+        {/* Delete button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setConfirmOpen(true)}
+          className="flex items-center gap-2 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground"
+        >
+          <Trash2 className="h-4 w-4" />
+          Delete
+        </Button>
       </div>
+
+      {/* Confirmation dialog */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete organization?</DialogTitle>
+            <DialogDescription>
+              This will permanently delete{" "}
+              <span className="font-semibold text-foreground">"{org.name}"</span>{" "}
+              and all its members. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+              disabled={deleteOrg.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleteOrg.isPending}
+              className="flex items-center gap-2"
+            >
+              {deleteOrg.isPending ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Deleting…
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4" />
+                  Delete organization
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Members + Invite — 2-col on desktop */}
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
