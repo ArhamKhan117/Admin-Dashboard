@@ -14,7 +14,7 @@ export function MemberRow({ member }: MemberRowProps) {
           {member.role}
         </Badge>
         <Badge
-          variant={member.status === "active" ? "success" : "warning"}
+          variant={member.status === "active" ? "success" : "info"}
           className="capitalize"
         >
           {member.status}
