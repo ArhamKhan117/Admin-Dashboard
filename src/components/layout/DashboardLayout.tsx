@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Building2, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function DashboardLayout() {
   const { user, signOut } = useAuth();
@@ -75,15 +76,18 @@ export function DashboardLayout() {
           <div className="text-sm text-muted-foreground">
             Welcome back, <span className="font-medium text-foreground">{displayEmail}</span>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => signOut()}
-            className="flex items-center gap-2 text-muted-foreground hover:text-destructive hover:border-destructive/50"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => signOut()}
+              className="flex items-center gap-2 text-muted-foreground hover:text-destructive hover:border-destructive/50"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Sign Out
+            </Button>
+          </div>
         </header>
 
         {/* Page content */}
