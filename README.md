@@ -1,6 +1,6 @@
 # AdminDash
 
-A production-grade admin dashboard for managing organizations and members — built with React 18, TypeScript, Supabase, and deployed to Vercel.
+> Production-grade admin dashboard for managing organizations and members — built with React 18, TypeScript, Supabase, and deployed to Vercel.
 
 ![React](https://img.shields.io/badge/React_18-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
