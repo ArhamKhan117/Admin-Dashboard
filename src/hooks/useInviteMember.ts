@@ -10,7 +10,7 @@ export function useInviteMember() {
 
   return useMutation({
     mutationFn: async (payload: InviteMemberRequest) => {
-      const { data, error } = await supabase.functions.invoke("invite-member", {
+      const { data, error } = await supabase.functions.invoke("Invite-Member", {
         body: payload,
       });
 
