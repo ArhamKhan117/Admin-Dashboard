@@ -182,7 +182,7 @@ export function OrganizationDetail({ orgId }: OrganizationDetailProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <MemberList members={members} isLoading={membersLoading} />
+            <MemberList members={members} isLoading={membersLoading} organizationId={orgId} />
           </CardContent>
         </Card>
 

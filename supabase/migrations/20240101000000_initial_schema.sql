@@ -78,6 +78,24 @@ CREATE POLICY "org_members_select_own_orgs"
     )
   );
 
+-- UPDATE: admins can update members of organizations they own (e.g. activate status)
+CREATE POLICY "org_members_update_own_orgs"
+  ON public.organization_members FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.organizations o
+      WHERE o.id = organization_id
+        AND o.created_by = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.organizations o
+      WHERE o.id = organization_id
+        AND o.created_by = auth.uid()
+    )
+  );
+
 -- INSERT: only via Edge Function (service role key bypasses RLS)
 -- No direct INSERT policy for anon/authenticated role on this table.
 -- The invite-member Edge Function uses the service role key.
