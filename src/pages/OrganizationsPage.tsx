@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, RefreshCw, AlertCircle } from "lucide-react";
+import { Plus, RefreshCw, AlertCircle, Search } from "lucide-react";
 import { useOrganizations } from "@/hooks/useOrganizations";
 import { OrganizationList } from "@/components/organizations/OrganizationList";
 import { CreateOrganizationForm } from "@/components/organizations/CreateOrganizationForm";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
@@ -19,6 +20,12 @@ export function OrganizationsPage() {
   const navigate = useNavigate();
   const { data: organizations = [], isLoading, isError, refetch } = useOrganizations();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filtered = organizations.filter((org) =>
+    org.name.toLowerCase().includes(search.toLowerCase()) ||
+    org.type.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleCardClick = (id: string) => {
     navigate(`/dashboard/organizations/${id}`);
@@ -31,7 +38,7 @@ export function OrganizationsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Organizations</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage your organizations and invite members.
+            {isLoading ? "Loading…" : `${organizations.length} organization${organizations.length !== 1 ? "s" : ""}`}
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -53,6 +60,19 @@ export function OrganizationsPage() {
         </Dialog>
       </div>
 
+      {/* Search */}
+      {!isError && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by name or type…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      )}
+
       {/* Directory */}
       {isError ? (
         <Alert variant="destructive">
@@ -71,11 +91,18 @@ export function OrganizationsPage() {
           </AlertDescription>
         </Alert>
       ) : (
-        <OrganizationList
-          organizations={organizations}
-          isLoading={isLoading}
-          onCardClick={handleCardClick}
-        />
+        <>
+          <OrganizationList
+            organizations={filtered}
+            isLoading={isLoading}
+            onCardClick={handleCardClick}
+          />
+          {!isLoading && search && filtered.length === 0 && (
+            <p className="text-center text-sm text-muted-foreground py-4">
+              No organizations match "<span className="font-medium">{search}</span>"
+            </p>
+          )}
+        </>
       )}
     </div>
   );

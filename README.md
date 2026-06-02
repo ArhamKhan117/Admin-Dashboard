@@ -38,7 +38,7 @@ A production-minded admin dashboard that lets authenticated admins create organi
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-username/admin-dashboard.git
+git clone https://github.com/ArhamKhan117/Admin-Dashboard.git
 cd admin-dashboard
 
 # 2. Install dependencies
@@ -148,8 +148,9 @@ The spec requires exactly one conditional field for one type. A separate table w
 2. **Invitation acceptance flow** — A magic link that lets an invited user sign up and have their `organization_members.user_id` linked to their new auth user automatically.
 3. **Role management UI** — Promote/demote members between `admin` and `member` roles from the detail page.
 4. **Pagination** — The org directory and members list currently load everything. For large datasets, cursor-based pagination via React Query's `useInfiniteQuery` would be the right approach.
-5. **Search/filter** — A search input on the org directory, filtered client-side (or server-side via Supabase's `ilike` operator).
-6. **E2E tests** — A Playwright test covering the full happy path: sign-in → create org → invite member → verify member appears in list.
+5. **E2E tests** — A Playwright test covering the full happy path: sign-in → create org → invite member → verify member appears in list.
+
+**Stretch goals already implemented:** dark mode (next-themes), search/filter on the org directory, delete organization with confirmation.
 
 ## Shortcuts and Tradeoffs
 
