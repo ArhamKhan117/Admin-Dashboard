@@ -12,7 +12,8 @@ type State =
   | { status: "sign-in" }
   | { status: "loading" }
   | { status: "success"; orgId: string }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string }
+  | { status: "check-email"; email: string };
 
 export function AcceptInvitePage() {
   const [searchParams] = useSearchParams();
@@ -70,10 +71,16 @@ export function AcceptInvitePage() {
       let accessToken: string;
 
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/accept-invite?token=${token}`,
+          },
+        });
         if (error) throw error;
         if (!data.session) {
-          setAuthError("Check your email to confirm your account, then come back to this link.");
+          setState({ status: "check-email", email });
           setAuthLoading(false);
           return;
         }
@@ -117,6 +124,24 @@ export function AcceptInvitePage() {
           >
             Go to Dashboard
           </Button>
+        </div>
+      </AuthLayout>
+    );
+  }
+
+  if (state.status === "check-email") {
+    return (
+      <AuthLayout title="Check your email" subtitle="One more step to complete your invitation">
+        <div className="flex flex-col items-center gap-4 py-4 text-center">
+          <div className="rounded-full bg-primary/10 p-4">
+            <CheckCircle className="h-8 w-8 text-primary" />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            We sent a confirmation email to <span className="font-medium text-foreground">{state.email}</span>.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Click the link in that email — it will bring you back here automatically to complete your invitation.
+          </p>
         </div>
       </AuthLayout>
     );
