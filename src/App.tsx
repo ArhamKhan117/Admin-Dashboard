@@ -9,6 +9,7 @@ import { SignInPage } from "@/pages/SignInPage";
 import { SignUpPage } from "@/pages/SignUpPage";
 import { OrganizationsPage } from "@/pages/OrganizationsPage";
 import { OrganizationDetailPage } from "@/pages/OrganizationDetailPage";
+import { AcceptInvitePage } from "@/pages/AcceptInvitePage";
 import { Toaster } from "@/components/ui/toaster";
 
 const queryClient = new QueryClient({
@@ -35,6 +36,9 @@ function App() {
               <Route path="/sign-in" element={<SignInPage />} />
               <Route path="/sign-up" element={<SignUpPage />} />
             </Route>
+
+            {/* Accept invite — accessible without auth (handles its own auth) */}
+            <Route path="/accept-invite" element={<AcceptInvitePage />} />
 
             {/* Protected routes — redirect to /sign-in if not authenticated */}
             <Route element={<ProtectedRoute />}>

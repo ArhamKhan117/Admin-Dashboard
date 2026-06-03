@@ -25,6 +25,8 @@ export interface OrganizationMember {
   role: "admin" | "member";
   invited_at: string | null; // ISO 8601 timestamptz
   joined_at: string | null; // ISO 8601 timestamptz
+  invite_token: string | null; // used for accept-invite flow
+  token_expires_at: string | null; // ISO 8601 timestamptz
 }
 
 // API response types for Edge Functions
