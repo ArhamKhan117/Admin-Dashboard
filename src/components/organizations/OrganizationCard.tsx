@@ -50,6 +50,9 @@ export function OrganizationCard({ organization, onClick }: OrganizationCardProp
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold text-foreground truncate">{organization.name}</h3>
             <Badge variant={variant} className="shrink-0">{organization.type}</Badge>
+            {organization.is_owner === false && (
+              <Badge variant="secondary" className="shrink-0">Member</Badge>
+            )}
           </div>
           <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">

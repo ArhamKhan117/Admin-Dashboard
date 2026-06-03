@@ -7,13 +7,14 @@ export enum OrganizationType {
 }
 
 export interface Organization {
-  id: string; // UUID
+  id: string;
   name: string;
   type: OrganizationType;
-  created_by: string; // UUID — FK to auth.users.id
-  created_at: string; // ISO 8601 timestamptz
+  created_by: string;
+  created_at: string;
   school_district: string | null;
-  member_count?: number; // computed via join or separate query
+  member_count?: number;
+  is_owner?: boolean; // true if current user created this org, false if they joined as member
 }
 
 export interface OrganizationMember {
