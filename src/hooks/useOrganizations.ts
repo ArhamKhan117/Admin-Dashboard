@@ -3,6 +3,29 @@ import { supabase } from "@/lib/supabase";
 import type { Organization } from "@/types/database";
 import { OrganizationType } from "@/types/database";
 
+interface RawOrg {
+  id: string;
+  name: string;
+  type: string;
+  created_by: string;
+  created_at: string;
+  school_district: string | null;
+  organization_members: { count: number }[] | null;
+}
+
+function normalizeOrg(org: RawOrg, isOwner: boolean): Organization {
+  return {
+    id: org.id,
+    name: org.name,
+    type: org.type as OrganizationType,
+    created_by: org.created_by,
+    created_at: org.created_at,
+    school_district: org.school_district,
+    member_count: org.organization_members?.[0]?.count ?? 0,
+    is_owner: isOwner,
+  };
+}
+
 export function useOrganizations() {
   return useQuery({
     queryKey: ["organizations"],
@@ -19,8 +42,8 @@ export function useOrganizations() {
 
       if (ownedError) throw ownedError;
 
-      // Fetch orgs the user is a member of (but didn't create)
-      const { data: memberOrgs, error: memberError } = await supabase
+      // Fetch orgs the user is an active member of
+      const { data: memberRows, error: memberError } = await supabase
         .from("organization_members")
         .select("organization_id, organizations(*, organization_members(count))")
         .eq("user_id", user.id)
@@ -28,25 +51,13 @@ export function useOrganizations() {
 
       if (memberError) throw memberError;
 
-      const normalize = (org: Record<string, unknown>, isOwned: boolean): Organization => {
-        const members = org.organization_members as { count: number }[] | null;
-        return {
-          ...org,
-          type: org.type as OrganizationType,
-          member_count: members?.[0]?.count ?? 0,
-          organization_members: undefined,
-          is_owner: isOwned,
-        } as Organization;
-      };
-
-      const owned = (ownedOrgs ?? []).map((org) => normalize(org as Record<string, unknown>, true));
-
+      const owned = (ownedOrgs ?? []).map((org) => normalizeOrg(org as unknown as RawOrg, true));
       const ownedIds = new Set(owned.map((o) => o.id));
 
-      const joined = (memberOrgs ?? [])
-        .map((row) => row.organizations as Record<string, unknown> | null)
-        .filter((org): org is Record<string, unknown> => !!org && !ownedIds.has(org.id as string))
-        .map((org) => normalize(org, false));
+      const joined = (memberRows ?? [])
+        .map((row) => row.organizations as unknown as RawOrg | null)
+        .filter((org): org is RawOrg => !!org && !ownedIds.has(org.id))
+        .map((org) => normalizeOrg(org, false));
 
       return [...owned, ...joined];
     },
