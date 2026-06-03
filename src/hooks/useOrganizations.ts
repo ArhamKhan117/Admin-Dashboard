@@ -3,29 +3,6 @@ import { supabase } from "@/lib/supabase";
 import type { Organization } from "@/types/database";
 import { OrganizationType } from "@/types/database";
 
-interface RawOrg {
-  id: string;
-  name: string;
-  type: string;
-  created_by: string;
-  created_at: string;
-  school_district: string | null;
-  organization_members: { count: number }[] | null;
-}
-
-function normalizeOrg(org: RawOrg, isOwner: boolean): Organization {
-  return {
-    id: org.id,
-    name: org.name,
-    type: org.type as OrganizationType,
-    created_by: org.created_by,
-    created_at: org.created_at,
-    school_district: org.school_district,
-    member_count: org.organization_members?.[0]?.count ?? 0,
-    is_owner: isOwner,
-  };
-}
-
 export function useOrganizations() {
   return useQuery({
     queryKey: ["organizations"],
@@ -42,22 +19,48 @@ export function useOrganizations() {
 
       if (ownedError) throw ownedError;
 
-      // Fetch orgs the user is an active member of
+      // Get org IDs where user is an active member
       const { data: memberRows, error: memberError } = await supabase
         .from("organization_members")
-        .select("organization_id, organizations(*, organization_members(count))")
+        .select("organization_id")
         .eq("user_id", user.id)
         .eq("status", "active");
 
       if (memberError) throw memberError;
 
-      const owned = (ownedOrgs ?? []).map((org) => normalizeOrg(org as unknown as RawOrg, true));
-      const ownedIds = new Set(owned.map((o) => o.id));
+      const ownedIds = new Set((ownedOrgs ?? []).map((o) => o.id));
+      const joinedOrgIds = (memberRows ?? [])
+        .map((r) => r.organization_id as string)
+        .filter((id) => !ownedIds.has(id));
 
-      const joined = (memberRows ?? [])
-        .map((row) => row.organizations as unknown as RawOrg | null)
-        .filter((org): org is RawOrg => !!org && !ownedIds.has(org.id))
-        .map((org) => normalizeOrg(org, false));
+      // Fetch joined orgs by ID
+      let joinedOrgs: typeof ownedOrgs = [];
+      if (joinedOrgIds.length > 0) {
+        const { data: fetched, error: fetchError } = await supabase
+          .from("organizations")
+          .select("*, organization_members(count)")
+          .in("id", joinedOrgIds);
+
+        if (fetchError) throw fetchError;
+        joinedOrgs = fetched ?? [];
+      }
+
+      const normalize = (org: typeof ownedOrgs[0], isOwner: boolean): Organization => {
+        const members = org.organization_members as { count: number }[] | null;
+        return {
+          id: org.id,
+          name: org.name,
+          type: org.type as OrganizationType,
+          created_by: org.created_by,
+          created_at: org.created_at,
+          school_district: org.school_district,
+          member_count: members?.[0]?.count ?? 0,
+          is_owner: isOwner,
+        };
+      };
+
+      const owned = (ownedOrgs ?? []).map((org) => normalize(org, true));
+      const joined = joinedOrgs.map((org) => normalize(org, false));
 
       return [...owned, ...joined];
     },
