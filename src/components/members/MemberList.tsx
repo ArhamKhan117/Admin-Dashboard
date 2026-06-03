@@ -1,6 +1,5 @@
 import { Users } from "lucide-react";
 import { MemberRow } from "./MemberRow";
-import { useUpdateMemberStatus } from "@/hooks/useUpdateMemberStatus";
 import type { OrganizationMember } from "@/types/database";
 
 interface MemberListProps {
@@ -9,21 +8,12 @@ interface MemberListProps {
   organizationId: string;
 }
 
-export function MemberList({ members, isLoading, organizationId }: MemberListProps) {
-  const updateStatus = useUpdateMemberStatus();
-
-  const handleActivate = (memberId: string) => {
-    updateStatus.mutate({ memberId, organizationId, status: "active" });
-  };
-
+export function MemberList({ members, isLoading }: MemberListProps) {
   if (isLoading) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-12 animate-pulse rounded-md border bg-muted"
-          />
+          <div key={i} className="h-12 animate-pulse rounded-md border bg-muted" />
         ))}
       </div>
     );
@@ -44,12 +34,7 @@ export function MemberList({ members, isLoading, organizationId }: MemberListPro
   return (
     <div className="space-y-2">
       {members.map((member) => (
-        <MemberRow
-          key={member.id}
-          member={member}
-          onActivate={handleActivate}
-          isActivating={updateStatus.isPending && updateStatus.variables?.memberId === member.id}
-        />
+        <MemberRow key={member.id} member={member} />
       ))}
     </div>
   );
