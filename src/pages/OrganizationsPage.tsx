@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, RefreshCw, AlertCircle, Search } from "lucide-react";
 import { useOrganizations } from "@/hooks/useOrganizations";
@@ -37,24 +37,26 @@ export function OrganizationsPage() {
 
   const debouncedSearch = useDebounce(search, 300);
 
-  const filtered = organizations
-    .filter((org) => {
-      const matchesSearch =
-        org.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        org.type.toLowerCase().includes(debouncedSearch.toLowerCase());
-      const matchesType = typeFilter === "all" || org.type === typeFilter;
-      return matchesSearch && matchesType;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "name_asc": return a.name.localeCompare(b.name);
-        case "name_desc": return b.name.localeCompare(a.name);
-        case "members_desc": return (b.member_count ?? 0) - (a.member_count ?? 0);
-        case "members_asc": return (a.member_count ?? 0) - (b.member_count ?? 0);
-        case "created_asc": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      }
-    });
+  const filtered = useMemo(() => {
+    return organizations
+      .filter((org) => {
+        const matchesSearch =
+          org.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          org.type.toLowerCase().includes(debouncedSearch.toLowerCase());
+        const matchesType = typeFilter === "all" || org.type === typeFilter;
+        return matchesSearch && matchesType;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "name_asc": return a.name.localeCompare(b.name);
+          case "name_desc": return b.name.localeCompare(a.name);
+          case "members_desc": return (b.member_count ?? 0) - (a.member_count ?? 0);
+          case "members_asc": return (a.member_count ?? 0) - (b.member_count ?? 0);
+          case "created_asc": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+      });
+  }, [organizations, debouncedSearch, typeFilter, sortBy]);
 
   const handleCardClick = (id: string) => {
     navigate(`/dashboard/organizations/${id}`);
@@ -159,6 +161,7 @@ export function OrganizationsPage() {
             organizations={filtered}
             isLoading={isLoading}
             onCardClick={handleCardClick}
+            onCreateClick={() => setOpen(true)}
           />
           {!isLoading && (debouncedSearch || typeFilter !== "all") && filtered.length === 0 && (
             <p className="text-center text-sm text-muted-foreground py-4">

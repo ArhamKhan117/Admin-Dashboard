@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Trash2, Clock, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { OrganizationMember } from "@/types/database";
@@ -32,9 +32,14 @@ export function MemberRow({ member, onRemove, isRemoving }: MemberRowProps) {
           {member.role}
         </Badge>
         <Badge
-          variant={member.status === "active" ? "success" : "info"}
-          className="capitalize"
+          variant={member.status === "active" ? "success" : "pending"}
+          className="capitalize flex items-center gap-1"
         >
+          {member.status === "active" ? (
+            <CheckCircle className="h-3 w-3" />
+          ) : (
+            <Clock className="h-3 w-3" />
+          )}
           {member.status}
         </Badge>
         {onRemove && (

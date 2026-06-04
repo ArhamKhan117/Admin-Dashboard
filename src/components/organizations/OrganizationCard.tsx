@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Organization } from "@/types/database";
 import { OrganizationType } from "@/types/database";
 import { formatDate } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/clipboard";
 import { toast } from "@/hooks/use-toast";
 
 interface OrganizationCardProps {
@@ -19,10 +20,10 @@ const typeBadgeVariant: Record<OrganizationType, "info" | "success" | "purple"> 
 export function OrganizationCard({ organization, onClick }: OrganizationCardProps) {
   const variant = typeBadgeVariant[organization.type] ?? "secondary";
 
-  const handleCopyId = (e: React.MouseEvent) => {
+  const handleCopyId = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(organization.id);
-    toast({ title: "Organization ID copied" });
+    const success = await copyToClipboard(organization.id);
+    toast({ title: success ? "Organization ID copied" : "Failed to copy" });
   };
 
   return (
