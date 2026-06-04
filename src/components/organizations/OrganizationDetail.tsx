@@ -7,6 +7,7 @@ import { useDeleteOrganization } from "@/hooks/useDeleteOrganization";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -117,15 +118,20 @@ export function OrganizationDetail({ orgId }: OrganizationDetailProps) {
         </div>
 
         {/* Delete button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setConfirmOpen(true)}
-          className="flex items-center gap-2 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground"
-        >
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setConfirmOpen(true)}
+              className="flex items-center gap-2 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Delete this organization</TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Confirmation dialog */}

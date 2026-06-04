@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, setQueryCacheClearer } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/router/ProtectedRoute";
 import { PublicRoute } from "@/router/PublicRoute";
@@ -28,7 +29,8 @@ function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <TooltipProvider>
+          <BrowserRouter>
           <AuthProvider>
             <Routes>
             {/* Public routes — redirect to dashboard if already signed in */}
@@ -67,6 +69,7 @@ function App() {
             <Toaster />
           </AuthProvider>
         </BrowserRouter>
+        </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

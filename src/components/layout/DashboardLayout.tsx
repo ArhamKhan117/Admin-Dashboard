@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function DashboardLayout() {
   const { user, signOut } = useAuth();
@@ -59,15 +60,19 @@ export function DashboardLayout() {
               <p className="text-xs font-medium truncate">{displayEmail}</p>
               <p className="text-xs text-muted-foreground">Admin</p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => signOut()}
-              className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-              title="Sign out"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => signOut()}
+                  className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Sign out</TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </aside>
