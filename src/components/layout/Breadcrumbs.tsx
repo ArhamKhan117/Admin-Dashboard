@@ -1,11 +1,18 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
+import { useOrganization } from "@/hooks/useOrganization";
+
+function OrgBreadcrumb({ id }: { id: string }) {
+  const { data: org } = useOrganization(id);
+  return <span className="font-medium text-foreground truncate max-w-[160px]">{org?.name ?? "Organization"}</span>;
+}
 
 export function Breadcrumbs() {
   const location = useLocation();
+  const { id } = useParams<{ id: string }>();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
-  // Only show on org detail page (3+ segments)
+  // Only show on org detail page
   if (pathnames.length <= 2) return null;
 
   return (
@@ -16,33 +23,16 @@ export function Breadcrumbs() {
       >
         <Home className="h-4 w-4" />
       </Link>
-
-      {pathnames.map((name, index) => {
-        if (name === "dashboard") return null;
-
-        const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
-        const isLast = index === pathnames.length - 1;
-
-        const displayName =
-          name === "organizations"
-            ? "Organizations"
-            : name.length > 20
-            ? name.slice(0, 20) + "…"
-            : name;
-
-        return (
-          <div key={routeTo} className="flex items-center">
-            <ChevronRight className="h-4 w-4 mx-1" />
-            {isLast ? (
-              <span className="font-medium text-foreground">{displayName}</span>
-            ) : (
-              <Link to={routeTo} className="hover:text-foreground transition-colors">
-                {displayName}
-              </Link>
-            )}
-          </div>
-        );
-      })}
+      <ChevronRight className="h-4 w-4 mx-1" />
+      <Link to="/dashboard/organizations" className="hover:text-foreground transition-colors">
+        Organizations
+      </Link>
+      {id && (
+        <>
+          <ChevronRight className="h-4 w-4 mx-1" />
+          <OrgBreadcrumb id={id} />
+        </>
+      )}
     </nav>
   );
 }
