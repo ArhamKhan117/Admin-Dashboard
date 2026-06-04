@@ -1,5 +1,6 @@
 import { Users } from "lucide-react";
 import { MemberRow } from "./MemberRow";
+import { useRemoveMember } from "@/hooks/useRemoveMember";
 import type { OrganizationMember } from "@/types/database";
 
 interface MemberListProps {
@@ -8,7 +9,13 @@ interface MemberListProps {
   organizationId: string;
 }
 
-export function MemberList({ members, isLoading }: MemberListProps) {
+export function MemberList({ members, isLoading, organizationId }: MemberListProps) {
+  const removeMember = useRemoveMember();
+
+  const handleRemove = (memberId: string) => {
+    removeMember.mutate({ memberId, organizationId });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -34,7 +41,12 @@ export function MemberList({ members, isLoading }: MemberListProps) {
   return (
     <div className="space-y-2">
       {members.map((member) => (
-        <MemberRow key={member.id} member={member} />
+        <MemberRow
+          key={member.id}
+          member={member}
+          onRemove={handleRemove}
+          isRemoving={removeMember.isPending && removeMember.variables?.memberId === member.id}
+        />
       ))}
     </div>
   );
