@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, RefreshCw, AlertCircle, Search } from "lucide-react";
 import { useOrganizations } from "@/hooks/useOrganizations";
+import { useDebounce } from "@/hooks/useDebounce";
 import { OrganizationList } from "@/components/organizations/OrganizationList";
 import { CreateOrganizationForm } from "@/components/organizations/CreateOrganizationForm";
 import { OrgStats } from "@/components/organizations/OrgStats";
@@ -32,14 +33,28 @@ export function OrganizationsPage() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("created_desc");
 
-  const filtered = organizations.filter((org) => {
-    const matchesSearch =
-      org.name.toLowerCase().includes(search.toLowerCase()) ||
-      org.type.toLowerCase().includes(search.toLowerCase());
-    const matchesType = typeFilter === "all" || org.type === typeFilter;
-    return matchesSearch && matchesType;
-  });
+  const debouncedSearch = useDebounce(search, 300);
+
+  const filtered = organizations
+    .filter((org) => {
+      const matchesSearch =
+        org.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        org.type.toLowerCase().includes(debouncedSearch.toLowerCase());
+      const matchesType = typeFilter === "all" || org.type === typeFilter;
+      return matchesSearch && matchesType;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "name_asc": return a.name.localeCompare(b.name);
+        case "name_desc": return b.name.localeCompare(a.name);
+        case "members_desc": return (b.member_count ?? 0) - (a.member_count ?? 0);
+        case "members_asc": return (a.member_count ?? 0) - (b.member_count ?? 0);
+        case "created_asc": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        default: return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
 
   const handleCardClick = (id: string) => {
     navigate(`/dashboard/organizations/${id}`);
@@ -82,9 +97,9 @@ export function OrganizationsPage() {
         <OrgStats organizations={organizations} />
       )}
 
-      {/* Search + type filter */}
+      {/* Search + filters */}
       {!isError && (
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -95,7 +110,7 @@ export function OrganizationsPage() {
             />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-full sm:w-36">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent>
@@ -103,6 +118,19 @@ export function OrganizationsPage() {
               <SelectItem value={OrganizationType.School}>School</SelectItem>
               <SelectItem value={OrganizationType.Nonprofit}>Nonprofit</SelectItem>
               <SelectItem value={OrganizationType.Business}>Business</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="created_desc">Newest first</SelectItem>
+              <SelectItem value="created_asc">Oldest first</SelectItem>
+              <SelectItem value="name_asc">Name (A–Z)</SelectItem>
+              <SelectItem value="name_desc">Name (Z–A)</SelectItem>
+              <SelectItem value="members_desc">Most members</SelectItem>
+              <SelectItem value="members_asc">Least members</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -132,7 +160,7 @@ export function OrganizationsPage() {
             isLoading={isLoading}
             onCardClick={handleCardClick}
           />
-          {!isLoading && (search || typeFilter !== "all") && filtered.length === 0 && (
+          {!isLoading && (debouncedSearch || typeFilter !== "all") && filtered.length === 0 && (
             <p className="text-center text-sm text-muted-foreground py-4">
               No organizations match your filters.
             </p>
