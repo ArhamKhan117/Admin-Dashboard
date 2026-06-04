@@ -30,8 +30,9 @@
 
 - **Authentication** — Sign up / sign in with Supabase Auth. Protected routes redirect unauthenticated users to sign-in. Signed-in email shown in sidebar and header.
 - **Organization Management** — Create organizations of type School, Nonprofit, or Business. School type reveals a conditional "School District" field. Delete organizations with confirmation.
-- **Member Invitations** — Invite members by email via a Supabase Edge Function that validates input, verifies org ownership, and prevents duplicate invitations. Invited members appear with status badges.
-- **Member Activation** — Manually activate invited members from the organization detail page.
+- **Member Invitations** — Invite members by email via a Supabase Edge Function. Sends a real invitation email via Resend with a unique accept link. Validates input, verifies org ownership, and prevents duplicate invitations.
+- **Invitation Acceptance Flow** — Invited users click the email link, sign up or sign in, and are automatically marked as active members. Token-based with 7-day expiry.
+- **Member Management** — Remove members from organizations directly from the detail page.
 - **Organization Directory** — Lists all organizations with name, type badge, member count, and creation date. Includes live search/filter by name or type.
 - **Dark Mode** — System-aware dark/light mode toggle via `next-themes`, available on all pages.
 - **Loading / Empty / Error States** — Skeleton loaders, empty state illustrations, and inline error messages throughout.
@@ -81,9 +82,12 @@ cp .env.example .env.local
 # Go to Supabase Dashboard → SQL Editor
 # Paste the contents of supabase/migrations/20240101000000_initial_schema.sql and run it
 
-# 5. Deploy the Edge Function
-supabase functions deploy invite-member --project-ref <your-project-ref>
+# 5. Deploy the Edge Functions
+supabase functions deploy Invite-Member --project-ref <your-project-ref>
+supabase functions deploy accept-invite --project-ref <your-project-ref>
 supabase secrets set SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key> --project-ref <your-project-ref>
+supabase secrets set RESEND_API_KEY=<your-resend-api-key> --project-ref <your-project-ref>
+supabase secrets set APP_URL=https://your-vercel-url.vercel.app --project-ref <your-project-ref>
 
 # 6. Start the dev server
 npm run dev
@@ -169,13 +173,13 @@ The requirement is one conditional field for one type. A separate table would be
 
 ## What I'd Do With Another Day
 
-1. **Email delivery** — Integrate [Resend](https://resend.com) at the `// TODO` placeholder in the Edge Function. The hook is already there — it's one API call away.
-2. **Invitation acceptance flow** — Generate a signed magic link on invite; when clicked, the user signs up and their `organization_members.user_id` gets linked automatically, setting status to `active`.
-3. **Role management UI** — Promote/demote members between `admin` and `member` from the detail page.
-4. **Pagination** — Cursor-based pagination via React Query's `useInfiniteQuery` for large org/member lists.
-5. **E2E tests** — A Playwright test covering sign-in → create org → invite member → verify member appears.
+1. **Role management UI** — Promote/demote members between `admin` and `member` from the detail page.
+2. **Pagination** — Cursor-based pagination via React Query's `useInfiniteQuery` for large org/member lists.
+3. **E2E tests** — A Playwright test covering sign-in → create org → invite member → verify member appears.
+4. **Custom email domain** — Verify a domain on Resend so invitation emails send from a branded address rather than `onboarding@resend.dev`.
+5. **Members can view joined orgs** — Currently the org directory only shows orgs the admin created. A future iteration would show orgs a user has joined as a member too.
 
-**Stretch goals already implemented:** dark mode (next-themes), search/filter on the org directory, delete organization with confirmation, member activation.
+**Stretch goals already implemented:** dark mode (next-themes), search/filter on the org directory, delete organization with confirmation, invitation acceptance flow with email delivery via Resend, remove member from organization.
 
 ---
 
