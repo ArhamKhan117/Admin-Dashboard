@@ -1,8 +1,9 @@
-import { Users, Calendar, ChevronRight } from "lucide-react";
+import { Users, Calendar, ChevronRight, Copy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Organization } from "@/types/database";
 import { OrganizationType } from "@/types/database";
 import { formatDate } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 interface OrganizationCardProps {
   organization: Organization;
@@ -17,6 +18,12 @@ const typeBadgeVariant: Record<OrganizationType, "info" | "success" | "purple"> 
 
 export function OrganizationCard({ organization, onClick }: OrganizationCardProps) {
   const variant = typeBadgeVariant[organization.type] ?? "secondary";
+
+  const handleCopyId = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(organization.id);
+    toast({ title: "Organization ID copied" });
+  };
 
   return (
     <div
@@ -64,7 +71,16 @@ export function OrganizationCard({ organization, onClick }: OrganizationCardProp
         </div>
       </div>
 
-      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5" />
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          onClick={handleCopyId}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          title="Copy organization ID"
+        >
+          <Copy className="h-3.5 w-3.5" />
+        </button>
+        <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+      </div>
     </div>
   );
 }
