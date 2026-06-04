@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 export const signUpSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -22,6 +23,44 @@ export const signUpSchema = z.object({
 });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+function getPasswordStrength(password: string): number {
+  let strength = 0;
+  if (password.length >= 8) strength++;
+  if (password.length >= 12) strength++;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+  if (/[0-9]/.test(password)) strength++;
+  if (/[^a-zA-Z0-9]/.test(password)) strength++;
+  return strength;
+}
+
+const strengthLabels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
+const strengthColors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
+const strengthTextColors = ["text-red-500", "text-orange-500", "text-yellow-500", "text-blue-500", "text-green-500"];
+
+function PasswordStrengthIndicator({ password }: { password: string }) {
+  if (!password) return null;
+  const strength = getPasswordStrength(password);
+
+  return (
+    <div className="space-y-1.5 mt-1">
+      <div className="flex gap-1">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "h-1 flex-1 rounded-full transition-all duration-300",
+              i < strength ? strengthColors[strength - 1] : "bg-muted"
+            )}
+          />
+        ))}
+      </div>
+      <p className={cn("text-xs", strength > 0 ? strengthTextColors[strength - 1] : "text-muted-foreground")}>
+        {strength > 0 ? strengthLabels[strength - 1] : "Enter a password"}
+      </p>
+    </div>
+  );
+}
 
 export function SignUpForm() {
   const navigate = useNavigate();
@@ -34,6 +73,8 @@ export function SignUpForm() {
       password: "",
     },
   });
+
+  const password = form.watch("password");
 
   const onSubmit = async (values: SignUpFormValues) => {
     setFormError(null);
@@ -92,6 +133,7 @@ export function SignUpForm() {
                   {...field}
                 />
               </FormControl>
+              <PasswordStrengthIndicator password={password} />
               <FormMessage />
             </FormItem>
           )}

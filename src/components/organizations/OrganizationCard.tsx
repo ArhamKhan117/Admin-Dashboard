@@ -1,5 +1,6 @@
 import { Users, Calendar, ChevronRight, Copy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Organization } from "@/types/database";
 import { OrganizationType } from "@/types/database";
 import { formatDate } from "@/lib/utils";
@@ -73,13 +74,17 @@ export function OrganizationCard({ organization, onClick }: OrganizationCardProp
       </div>
 
       <div className="flex items-center gap-1 shrink-0">
-        <button
-          onClick={handleCopyId}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-          title="Copy organization ID"
-        >
-          <Copy className="h-3.5 w-3.5" />
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={handleCopyId}
+              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+            >
+              <Copy className="h-3.5 w-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Copy organization ID</TooltipContent>
+        </Tooltip>
         <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
       </div>
     </div>
