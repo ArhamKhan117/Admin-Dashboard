@@ -1,20 +1,20 @@
+import { Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { OrganizationMember } from "@/types/database";
 
 interface MemberRowProps {
   member: OrganizationMember;
-  onActivate?: (memberId: string) => void;
-  isActivating?: boolean;
+  onRemove?: (memberId: string) => void;
+  isRemoving?: boolean;
 }
 
-export function MemberRow({ member, onActivate, isActivating }: MemberRowProps) {
+export function MemberRow({ member, onRemove, isRemoving }: MemberRowProps) {
   const initial = member.email.charAt(0).toUpperCase();
 
   return (
     <div className="flex items-center justify-between rounded-md border px-4 py-3 hover:bg-accent/30 transition-colors">
       <div className="flex items-center gap-3 min-w-0">
-        {/* Avatar initial */}
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
           {initial}
         </div>
@@ -37,15 +37,16 @@ export function MemberRow({ member, onActivate, isActivating }: MemberRowProps) 
         >
           {member.status}
         </Badge>
-        {member.status === "invited" && onActivate && (
+        {onRemove && (
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onActivate(member.id)}
-            disabled={isActivating}
-            className="h-7 text-xs px-2"
+            variant="ghost"
+            size="icon"
+            onClick={() => onRemove(member.id)}
+            disabled={isRemoving}
+            className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            title="Remove member"
           >
-            {isActivating ? "…" : "Activate"}
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         )}
       </div>

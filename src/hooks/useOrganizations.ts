@@ -14,14 +14,16 @@ export function useOrganizations() {
 
       if (error) throw error;
 
-      // Normalize the member_count from the joined count
       return (data ?? []).map((org) => {
         const members = org.organization_members as { count: number }[] | null;
         return {
-          ...org,
+          id: org.id,
+          name: org.name,
           type: org.type as OrganizationType,
+          created_by: org.created_by,
+          created_at: org.created_at,
+          school_district: org.school_district,
           member_count: members?.[0]?.count ?? 0,
-          organization_members: undefined,
         } as Organization;
       });
     },
