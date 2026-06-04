@@ -140,7 +140,28 @@ Full migration SQL: `supabase/migrations/20240101000000_initial_schema.sql`
 
 ---
 
-## Branching Strategy
+## Testing
+
+### Unit Tests
+```bash
+npm test                  # Run all unit tests once
+npm run test:watch        # Watch mode
+npm run test:coverage     # Generate coverage report
+```
+
+Tests cover:
+- `createOrgSchema` — validates all organization creation rules (name length, type enum, conditional school_district)
+- `signInSchema` / `signUpSchema` — validates email format and password length rules
+
+### E2E Tests (Playwright)
+```bash
+npm run test:e2e          # Run E2E tests (requires dev server running)
+npm run test:e2e:ui       # Open Playwright UI
+```
+
+E2E tests cover the full happy path: sign-in → create org → invite member → verify member appears.
+
+---
 
 ```
 main           ← production → Vercel Production URL
@@ -173,13 +194,14 @@ The requirement is one conditional field for one type. A separate table would be
 
 ## What I'd Do With Another Day
 
-1. **Role management UI** — Promote/demote members between `admin` and `member` from the detail page.
-2. **Pagination** — Cursor-based pagination via React Query's `useInfiniteQuery` for large org/member lists.
-3. **E2E tests** — A Playwright test covering sign-in → create org → invite member → verify member appears.
-4. **Custom email domain** — Verify a domain on Resend so invitation emails send from a branded address rather than `onboarding@resend.dev`.
-5. **Members can view joined orgs** — Currently the org directory only shows orgs the admin created. A future iteration would show orgs a user has joined as a member too.
+1. **Role management UI** — Promote/demote members between `admin` and `member` from the detail page. Requires updating RLS policies to allow member admins to manage their org.
+2. **Pagination** — Cursor-based pagination via React Query's `useInfiniteQuery` for large org/member lists. Currently loads all records.
+3. **Activity audit log** — A new `activity_log` table tracking who invited/removed members and when. Displayed as a feed on the org detail page.
+4. **Rate limiting on Edge Functions** — Use Upstash Redis to rate-limit the invite endpoint per user per minute to prevent spam.
+5. **Custom email domain** — Verify a domain on Resend so invitation emails send from a branded address rather than `onboarding@resend.dev`.
+6. **Members can view joined orgs** — Currently the org directory only shows orgs the admin created. A future iteration would show orgs a user has joined as a member.
 
-**Stretch goals already implemented:** dark mode (next-themes), search/filter on the org directory, delete organization with confirmation, invitation acceptance flow with email delivery via Resend, remove member from organization.
+**Stretch goals already implemented:** dark mode (next-themes), search/filter + sort on the org directory, type filter, org stats dashboard, CSV export, delete organization, remove member, invitation acceptance flow with email delivery via Resend, error boundary, debounced search, copy org ID, unit tests, E2E test (Playwright), CONTRIBUTING.md, SEO meta tags.
 
 ---
 

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateOrganization } from "@/hooks/useCreateOrganization";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { OrganizationType } from "@/types/database";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ export function CreateOrganizationForm({ onSuccess }: { onSuccess?: () => void }
 
   const watchedType = form.watch("type");
   const isSchool = watchedType === OrganizationType.School;
+  useUnsavedChangesWarning(form.formState.isDirty);
 
   const onSubmit = async (values: CreateOrgFormValues) => {
     if (!user) return;
