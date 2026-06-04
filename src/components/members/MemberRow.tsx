@@ -1,11 +1,15 @@
+import { Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { OrganizationMember } from "@/types/database";
 
 interface MemberRowProps {
   member: OrganizationMember;
+  onRemove?: (memberId: string) => void;
+  isRemoving?: boolean;
 }
 
-export function MemberRow({ member }: MemberRowProps) {
+export function MemberRow({ member, onRemove, isRemoving }: MemberRowProps) {
   const initial = member.email.charAt(0).toUpperCase();
 
   return (
@@ -33,6 +37,18 @@ export function MemberRow({ member }: MemberRowProps) {
         >
           {member.status}
         </Badge>
+        {onRemove && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onRemove(member.id)}
+            disabled={isRemoving}
+            className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            title="Remove member"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        )}
       </div>
     </div>
   );
