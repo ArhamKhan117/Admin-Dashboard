@@ -1,14 +1,16 @@
-import { Building2, Plus } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { OrganizationCard } from "./OrganizationCard";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { Organization } from "@/types/database";
 
 interface OrganizationListProps {
   organizations: Organization[];
   isLoading: boolean;
   onCardClick: (id: string) => void;
+  onCreateClick?: () => void;
 }
 
-export function OrganizationList({ organizations, isLoading, onCardClick }: OrganizationListProps) {
+export function OrganizationList({ organizations, isLoading, onCardClick, onCreateClick }: OrganizationListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -21,19 +23,12 @@ export function OrganizationList({ organizations, isLoading, onCardClick }: Orga
 
   if (organizations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20 text-center">
-        <div className="rounded-2xl bg-primary/10 p-5 mb-5">
-          <Building2 className="h-10 w-10 text-primary" />
-        </div>
-        <h3 className="text-lg font-semibold">No organizations yet</h3>
-        <p className="mt-2 text-sm text-muted-foreground max-w-xs leading-relaxed">
-          You haven't created any organizations. Hit{" "}
-          <span className="inline-flex items-center gap-0.5 font-medium text-foreground">
-            <Plus className="h-3 w-3" /> New Organization
-          </span>{" "}
-          to get started.
-        </p>
-      </div>
+      <EmptyState
+        icon={Building2}
+        title="No organizations yet"
+        description="You haven't created any organizations. Create your first one to start managing members."
+        action={onCreateClick ? { label: "New Organization", onClick: onCreateClick } : undefined}
+      />
     );
   }
 

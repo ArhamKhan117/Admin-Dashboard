@@ -1,13 +1,13 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, Link } from "react-router-dom";
 import { Building2, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
 export function DashboardLayout() {
   const { user, signOut } = useAuth();
 
-  // Truncate email for display
   const displayEmail = user?.email
     ? user.email.length > 28
       ? user.email.slice(0, 25) + "..."
@@ -18,13 +18,16 @@ export function DashboardLayout() {
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <aside className="flex w-60 flex-col border-r bg-card">
-        {/* Logo */}
-        <div className="flex h-16 items-center gap-2 border-b px-5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+        {/* Clickable Logo */}
+        <Link
+          to="/dashboard/organizations"
+          className="flex h-16 items-center gap-2 border-b px-5 transition-opacity hover:opacity-80 group"
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary transition-transform group-hover:scale-110">
             <LayoutDashboard className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="text-base font-bold tracking-tight">AdminDash</span>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1">
@@ -92,6 +95,7 @@ export function DashboardLayout() {
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-6 md:p-8 max-w-5xl mx-auto w-full">
+          <Breadcrumbs />
           <Outlet />
         </main>
       </div>
